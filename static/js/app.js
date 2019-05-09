@@ -1,3 +1,4 @@
+d3.event.preventDefault();
 
 const ufoData = data;
 const columns = ["datetime", "city", "state", "country", "shape", "durationMinutes", "comments"]
