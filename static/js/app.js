@@ -1,5 +1,8 @@
-d3.event.preventDefault();
+submit.on("click", function() {
 
+    d3.event.preventDefault()
+    
+    
 const ufoData = data;
 const columns = ["datetime", "city", "state", "country", "shape", "durationMinutes", "comments"]
 const tbody = d3.select("tbody")
