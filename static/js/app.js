@@ -1,141 +1,117 @@
-submit.on("click", function() {
+const tableData = data;
 
-    d3.event.preventDefault()
-    
-    
-const ufoData = data;
-const columns = ["datetime", "city", "state", "country", "shape", "durationMinutes", "comments"]
+//assign the tbody to a a descriptive
 const tbody = d3.select("tbody")
 
+//assign columns
+const columns = ["datetime", "city", "state", "country", "shape", "durationMinutes", "comments"]
 
+// Select the html id of the Filter Table button
+const filter = d3.select("#filter-btn");
 
-const fillTable = (dataInput) => {
-    dataInput.forEach(ufo => {
-        let row = tbody.append("tr");
-        columns.forEach(column => {
-            row.append("td").text(ufo[column])
-        });        
-    });
-}
+filter.on("click", function () {
 
-fillTable(ufoData)
-
-let 
-    ufoDays = [],
-    ufoCities = [],
-    ufoCountries = [],
-    ufoStates = [];
-
-for (let i=0; i<ufoData.length; i++){
-    ufoDays.push(ufoData[i].datetime);
-    ufoCities.push(ufoData[i].city);
-    ufoCountries.push(ufoData[i].country);
-    ufoStates.push(ufoData[i].state);
-}
-ufoDays = ufoDays.filter(function (e, i, arr) {
-    return arr.indexOf(e, i+1) === -1;
-});
-
-
-ufoCities = ufoCities.filter(function (e, i, arr) {
-    return arr.indexOf(e, i+1) === -1;
-});
-
-ufoCountries = ufoCountries.filter(function (e, i, arr) {
-    return arr.indexOf(e, i+1) === -1;
-});
-
-ufoStates = ufoStates.filter(function (e, i, arr) {
-    return arr.indexOf(e, i+1) === -1;
-});
-
-
-const dropDownDate = d3.select("#d3-dropdown-date")
-
-let optionListDate = document.getElementById('d3-dropdown-date').options;
-
-ufoDays.forEach(option => {
-    optionListDate.add(
-        new Option(option)
-    )
-});
-
-dropDownDate.on("change", function() {
     tbody.html("");
-    const selection = dropDownDate.node().value;
-    console.log(selection);
-    const filterData = ufoData.filter(ufo => {
-        return ufo.datetime === selection;
-    })
-    console.log(filterData);
 
-    fillTable(filterData)
-})
+    d3.event.preventDefault();
 
-const dropDownCity = d3.select("#d3-dropdown-city")
+    //select the input date and get the html node
+    const inputDate = d3.select('#datetime');
+    //get the value property of the input date, trim any spaces
+    const inputDateValue = inputDate.property("value").trim();
 
-let optionListCity = document.getElementById('d3-dropdown-city').options;
+    const inputCity = d3.select('#city');
+    const inputCityValue = inputCity.property("value").trim().toLowerCase();
 
-ufoCities.forEach(option => {
-    optionListCity.add(
-        new Option(option)
-    )
+    const inputState = d3.select('#state');
+    //get the value property of the input state, trim spaces and make all lower case
+    const inputStateValue = inputState.property("value").trim().toLowerCase();
+
+    //select the input country and get the html node
+    const inputCountry = d3.select('#country');
+    //get the value property of the input country, trim spaces and make all lower case
+    const inputCountryValue = inputCountry.property("value").trim().toLowerCase();
+
+    //select the input shape and get the html node
+    const inputShape = d3.select('#shape');
+    //get the value property of the input shape, trim spaces and make all lower case
+    const inputShapeValue = inputShape.property("value").trim().toLowerCase();
+
+    //show tableData
+    console.log(tableData);
+
+    let filteredData  // defines filteredData array, that can change in code
+    let userInput = false  //init boolean to false, can change in code based on user input
+
+    if (inputDateValue != "") {
+        filteredData = tableData.filter(sighting => sighting.datetime === inputDateValue)
+        console.log(`DateEntered: ${inputDateValue}`)
+        userInput = true
+    }
+    else {
+        filteredData = tableData
+        console.log("No date put into the machine man")
+        //console.log(filteredData)
+    }
+    if (inputCityValue != "") {
+        filteredData = filteredData.filter(sighting => sighting.city === inputCityValue)
+        console.log(`CityEntered: ${inputCityValue}`)
+        userInput = true
+    }
+    else {
+        console.log("No city bro")
+        //console.log(filteredData)
+    }
+    if (inputStateValue != "") {
+        filteredData = filteredData.filter(sighting => sighting.state === inputStateValue)
+        console.log(`StateEntered: ${inputStateValue}`)
+        userInput = true
+    }
+    else {
+        console.log("No state bro")
+        //console.log(filteredData)
+    }
+    if (inputCountryValue != "") {
+        filteredData = filteredData.filter(sighting => sighting.country === inputCountryValue)
+        console.log(`CountryEntered: ${inputCountryValue}`)
+        userInput = true
+    }
+    else {
+        console.log("No country bro")
+        //console.log(filteredData)
+    }
+    if (inputShapeValue != "") {
+        filteredData = filteredData.filter(sighting => sighting.shape === inputShapeValue)
+        console.log(`ShapeEntered: ${inputShapeValue}`)
+        userInput = true
+    }
+    else {
+        console.log("No shape bro")
+        //console.log(filteredData)
+    }
+
+    // construct table on html
+    if (userInput != true) {
+        //user chose no criteria....alert them...just show all data
+        window.alert("Nothing entered, here's everything")
+        tableData.forEach(sighting => {
+            var row = tbody.append("tr")
+            columns.forEach(column => {
+                row.append("td").text(sighting[column])
+            });
+        });
+    } else {
+        //show filtered data
+        filteredData.forEach(sighting => {
+            var row = tbody.append("tr")
+            columns.forEach(column => {
+                row.append("td").text(sighting[column])
+            });
+        });
+        //console.log(filteredData.length)
+        if (filteredData.length == 0) {
+            //user had nothing return from filtered data...alert them
+            window.alert("You broke it, try again")
+        }
+    }
 });
-
-dropDownCity.on("change", function() {
-    tbody.html("");
-    const selection = dropDownCity.node().value;
-    console.log(selection);
-    const filterData = ufoData.filter(ufo => {
-        return ufo.city === selection;
-    })
-    console.log(filterData);
-
-    fillTable(filterData)
-})
-
-const dropDownCountry = d3.select("#d3-dropdown-country")
-
-let optionListCountry = document.getElementById('d3-dropdown-country').options;
-
-ufoCountries.forEach(option => {
-    optionListCountry.add(
-        new Option(option)
-    )
-});
-
-dropDownCountry.on("change", function() {
-    tbody.html("");
-    const selection = dropDownCountry.node().value;
-    console.log(selection);
-    const filterData = ufoData.filter(ufo => {
-        return ufo.country === selection;
-    })
-    console.log(filterData);
-
-    fillTable(filterData)
-})
-
-const dropDownState = d3.select("#d3-dropdown-state")
-
-let optionListState = document.getElementById('d3-dropdown-state').options;
-
-ufoStates.forEach(option => {
-    optionListState.add(
-        new Option(option)
-    )
-});
-
-dropDownState.on("change", function() {
-    tbody.html("");
-    const selection = dropDownState.node().value;
-    console.log(selection);
-    const filterData = ufoData.filter(ufo => {
-        return ufo.state === selection;
-    })
-    console.log(filterData);
-
-    fillTable(filterData)
-})
-
-
